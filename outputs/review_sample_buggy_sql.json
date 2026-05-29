@@ -1,0 +1,139 @@
+{
+  "generated_at": "2026-05-28T07:58:22.151024",
+  "file": "sample_buggy.sql",
+  "language": "sql",
+  "metrics": {
+    "lines": 42,
+    "complexity": 9.5,
+    "total_findings": 11,
+    "critical": 0,
+    "high": 2,
+    "medium": 6,
+    "low": 3
+  },
+  "recommendation": "REQUEST_CHANGES",
+  "summary": "Code Review Summary:\n\n1. The overall code quality is moderate, with several opportunities for optimization and improvement in terms of performance and type safety.\n\n2. The most critical issues to address are the N+1 query pattern (line 1), non-SARGable conditions due to function application on indexed columns (line 1), and the excessive retrieval of unnecessary columns (lines 8). These issues can significantly impact the efficiency of your SQL queries.\n\n3. The developer has demonstrated an understanding of SQL syntax and structure, as evidenced by the well-structured code. However, there is room for improvement in optimizing queries for better performance and adhering to best practices for writing efficient SQL. It's recommended to focus on addressing the identified issues and improving query efficiency moving forward.",
+  "findings": [
+    {
+      "severity": "LOW",
+      "category": "performance",
+      "line": 1,
+      "description": "String literal in WHERE clause may cause implicit type conversion and index scan bypass.",
+      "snippet": "-- sample_buggy.sql\n-- Intentionally problematic SQL for demo purposes\n\n-- Query 1: Missing WHERE on",
+      "suggestion": "Ensure column and comparison value types match to enable index usage."
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "performance",
+      "line": 8,
+      "description": "SELECT * retrieves all columns including unnecessary ones, increasing I/O and network load.",
+      "snippet": "SELECT *",
+      "suggestion": "Specify only required columns explicitly: SELECT col1, col2 FROM ..."
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "performance",
+      "line": 8,
+      "description": "SELECT * retrieves all columns including unnecessary ones, increasing I/O and network load.",
+      "snippet": "SELECT *",
+      "suggestion": "Specify only required columns explicitly: SELECT col1, col2 FROM ..."
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "performance",
+      "line": 1,
+      "description": "Function applied to indexed column in WHERE clause prevents index usage (non-SARGable).",
+      "snippet": "-- Query 3: Non-SARGable WHERE clause\nSELECT * FROM transactions\nWHERE YEAR(created_at) = 2024\nAND M",
+      "suggestion": "Rewrite to avoid functions on indexed columns: use date ranges instead of YEAR()."
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "performance",
+      "line": 8,
+      "description": "SELECT * retrieves all columns including unnecessary ones, increasing I/O and network load.",
+      "snippet": "SELECT *",
+      "suggestion": "Specify only required columns explicitly: SELECT col1, col2 FROM ..."
+    },
+    {
+      "severity": "LOW",
+      "category": "performance",
+      "line": 1,
+      "description": "String literal in WHERE clause may cause implicit type conversion and index scan bypass.",
+      "snippet": "-- Query 4: Deeply nested subqueries\nSELECT *\nFROM users\nWHERE id IN (\n    SELECT user_id FROM order",
+      "suggestion": "Ensure column and comparison value types match to enable index usage."
+    },
+    {
+      "severity": "HIGH",
+      "category": "performance",
+      "line": 1,
+      "description": "Query contains 4 nested SELECT statements \u2014 potential N+1 query pattern.",
+      "snippet": "-- Query 4: Deeply nested subqueries\nSELECT *\nFROM users\nWHERE id IN (\n    SELECT user_id FROM order",
+      "suggestion": "Refactor to use JOINs or CTEs instead of deeply nested subqueries."
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "performance",
+      "line": 8,
+      "description": "SELECT * retrieves all columns including unnecessary ones, increasing I/O and network load.",
+      "snippet": "SELECT *",
+      "suggestion": "Specify only required columns explicitly: SELECT col1, col2 FROM ..."
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "performance",
+      "line": 8,
+      "description": "SELECT * retrieves all columns including unnecessary ones, increasing I/O and network load.",
+      "snippet": "SELECT *",
+      "suggestion": "Specify only required columns explicitly: SELECT col1, col2 FROM ..."
+    },
+    {
+      "severity": "LOW",
+      "category": "performance",
+      "line": 1,
+      "description": "String literal in WHERE clause may cause implicit type conversion and index scan bypass.",
+      "snippet": "-- Query 7: String comparison on numeric column\nSELECT * FROM accounts\nWHERE account_id = '12345';",
+      "suggestion": "Ensure column and comparison value types match to enable index usage."
+    },
+    {
+      "severity": "HIGH",
+      "category": "performance",
+      "line": 1,
+      "description": "CROSS JOIN produces Cartesian product \u2014 exponential row count growth.",
+      "snippet": "CROSS JOIN",
+      "suggestion": "Verify CROSS JOIN is intentional. Consider INNER JOIN with ON condition."
+    }
+  ],
+  "fixes": [
+    {
+      "issue": "Query contains 4 nested SELECT statements \u2014 potential N+1 query pattern.",
+      "original": "-- Query 4: Deeply nested subqueries\nSELECT *\nFROM users\nWHERE id IN (\n    SELECT user_id FROM order",
+      "fixed": "Here's a refactored version using Common Table Expressions (CTEs):\n\n\nWITH user_orders AS (\n    SELECT user_id FROM order\n)\nSELECT *\nFROM users\nWHERE id IN (SELECT user_id FROM user_orders);",
+      "explanation": "I changed the original SQL query to use Common Table Expressions (CTEs) for better readability and performance. CTEs allow for the creation of temporary result sets that can be referenced multiple times within a single SELECT, INSERT, UPDATE, or DELETE statement. This refactoring helps in managing deeply nested subqueries by breaking them down into smaller, more"
+    },
+    {
+      "issue": "CROSS JOIN produces Cartesian product \u2014 exponential row count growth.",
+      "original": "CROSS JOIN",
+      "fixed": "INNER JOIN table1 ON table1.id = table2.id\n\nThis will replace the CROSS JOIN and only return rows where the id matches in both tables, reducing the row count growth.",
+      "explanation": "I've modified the query from \"CROSS JOIN\" to \"INNER JOIN table1 ON table1.id = table2.id\". This change specifies an inner join with a condition that only includes rows where the 'id' column matches in both tables, thus reducing the row count growth compared to a cross join which returns all possible combinations of rows from both tables."
+    },
+    {
+      "issue": "SELECT * retrieves all columns including unnecessary ones, increasing I/O and network load.",
+      "original": "SELECT *",
+      "fixed": "SELECT col1, col2",
+      "explanation": "I changed \"SELECT *\" to \"SELECT col1, col2\" to specifically select only the required columns instead of all columns, which can improve performance and reduce unnecessary data retrieval."
+    },
+    {
+      "issue": "SELECT * retrieves all columns including unnecessary ones, increasing I/O and network load.",
+      "original": "SELECT *",
+      "fixed": "SELECT col1, col2",
+      "explanation": "I changed \"SELECT *\" to \"SELECT col1, col2\" to specifically select only the required columns instead of all columns, which can improve performance and reduce unnecessary data retrieval."
+    },
+    {
+      "issue": "Function applied to indexed column in WHERE clause prevents index usage (non-SARGable).",
+      "original": "-- Query 3: Non-SARGable WHERE clause\nSELECT * FROM transactions\nWHERE YEAR(created_at) = 2024\nAND M",
+      "fixed": "SELECT * FROM transactions WHERE created_at BETWEEN '2024-01-01' AND '2024-12-31'",
+      "explanation": "I changed the query to use a date range instead of a non-SARGable (SQL Server's term for functions that cannot be used efficiently by the query optimizer) function on a column in the WHERE clause. This change allows the database to perform an index seek operation, which is more efficient and faster than a scan operation."
+    }
+  ],
+  "tests_generated": 9
+}

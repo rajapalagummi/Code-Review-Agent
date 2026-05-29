@@ -1,0 +1,171 @@
+{
+  "generated_at": "2026-05-28T07:57:11.363012",
+  "file": "sample_buggy.py",
+  "language": "python",
+  "metrics": {
+    "lines": 83,
+    "complexity": 39.5,
+    "total_findings": 15,
+    "critical": 0,
+    "high": 9,
+    "medium": 2,
+    "low": 4
+  },
+  "recommendation": "REQUEST_CHANGES",
+  "summary": "Code Review Summary:\n\n1. The overall quality of the code is moderate, with several high-priority issues that need immediate attention. The excessive use of mutable default arguments across multiple functions poses a significant risk for unintended side effects and inconsistencies in the program's behavior.\n\n2. The most important issues to address are the shared mutable default arguments in functions 'process_orders', 'calculate_discount', 'batch_insert', 'run', and 'validate'. Additionally, the bare except clause catching all exceptions, including KeyboardInterrupt and SystemExit, should be replaced with more specific exception handling.\n\n3. The developer has demonstrated a good understanding of Python syntax and structure, as evidenced by the well-organized codebase. However, it is essential to prioritize addressing the high-priority issues mentioned above to ensure the code's reliability and maintainability.",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 6,
+      "description": "Mutable default argument in function 'process_orders'. Shared across all calls.",
+      "snippet": "def process_orders(orders=[]):",
+      "suggestion": "Use None as default and initialize inside function: if arg is None: arg = []"
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 25,
+      "description": "Mutable default argument in function 'calculate_discount'. Shared across all calls.",
+      "snippet": "def calculate_discount(price, discount=[], thresholds={}):",
+      "suggestion": "Use None as default and initialize inside function: if arg is None: arg = []"
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 25,
+      "description": "Mutable default argument in function 'calculate_discount'. Shared across all calls.",
+      "snippet": "def calculate_discount(price, discount=[], thresholds={}):",
+      "suggestion": "Use None as default and initialize inside function: if arg is None: arg = []"
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 76,
+      "description": "Mutable default argument in function 'batch_insert'. Shared across all calls.",
+      "snippet": "def batch_insert(conn, table, records=[]):",
+      "suggestion": "Use None as default and initialize inside function: if arg is None: arg = []"
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 39,
+      "description": "Mutable default argument in function 'run'. Shared across all calls.",
+      "snippet": "def run(self, data, config={}):",
+      "suggestion": "Use None as default and initialize inside function: if arg is None: arg = []"
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 58,
+      "description": "Mutable default argument in function 'validate'. Shared across all calls.",
+      "snippet": "def validate(self, records, rules=[]):",
+      "suggestion": "Use None as default and initialize inside function: if arg is None: arg = []"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "style",
+      "line": 20,
+      "description": "Use 'is None' or 'is not None' instead of == None / != None.",
+      "snippet": "if result == None:",
+      "suggestion": "Replace '== None' with 'is None' and '!= None' with 'is not None'."
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 12,
+      "description": "Bare except clause catches all exceptions including KeyboardInterrupt and SystemExit.",
+      "snippet": "except:",
+      "suggestion": "Catch specific exceptions: except (ValueError, TypeError) as e:"
+    },
+    {
+      "severity": "MEDIUM",
+      "category": "style",
+      "line": 51,
+      "description": "Use 'is None' or 'is not None' instead of == None / != None.",
+      "snippet": "if item == None:",
+      "suggestion": "Replace '== None' with 'is None' and '!= None' with 'is not None'."
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 81,
+      "description": "Bare except clause catches all exceptions including KeyboardInterrupt and SystemExit.",
+      "snippet": "except:",
+      "suggestion": "Catch specific exceptions: except (ValueError, TypeError) as e:"
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 13,
+      "description": "print() statement found in production code.",
+      "snippet": "print(\"error processing order\")",
+      "suggestion": "Replace with logging: import logging; logging.info(...)"
+    },
+    {
+      "severity": "HIGH",
+      "category": "logic_error",
+      "line": 65,
+      "description": "Bare except clause catches all exceptions including KeyboardInterrupt and SystemExit.",
+      "snippet": "except:",
+      "suggestion": "Catch specific exceptions: except (ValueError, TypeError) as e:"
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 82,
+      "description": "print() statement found in production code.",
+      "snippet": "print(\"insert failed\")",
+      "suggestion": "Replace with logging: import logging; logging.info(...)"
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 46,
+      "description": "print() statement found in production code.",
+      "snippet": "print(f\"transform failed: {e}\")",
+      "suggestion": "Replace with logging: import logging; logging.info(...)"
+    },
+    {
+      "severity": "LOW",
+      "category": "style",
+      "line": 66,
+      "description": "print() statement found in production code.",
+      "snippet": "print(\"validation error\")",
+      "suggestion": "Replace with logging: import logging; logging.info(...)"
+    }
+  ],
+  "fixes": [
+    {
+      "issue": "Mutable default argument in function 'process_orders'. Shared across all calls.",
+      "original": "def process_orders(orders=[]):",
+      "fixed": "Here's the corrected Python code for the given issue:\n\n\ndef process_orders(orders=None):\n    if orders is None:\n        orders = []\n    # rest of your code here",
+      "explanation": "I changed the default argument of `process_orders` function from an empty list (`[]`) to `None`. This modification allows for more flexibility as it can handle cases where no argument is passed, not just when an empty list is intended. The initial assignment of an empty list only occurs if `orders` is indeed `None`, ensuring the function works correctly regardless of the input provided."
+    },
+    {
+      "issue": "Mutable default argument in function 'calculate_discount'. Shared across all calls.",
+      "original": "def calculate_discount(price, discount=[], thresholds={}):",
+      "fixed": "Here's the corrected code for the 'calculate_discount' function in Python:\n\n\ndef calculate_discount(price, discount=None, thresholds={}):\n    if discount is None:\n        discount = []\n    # rest of your code here...",
+      "explanation": "I changed the default value of the 'discount' parameter from an empty list to `None` in the function definition. This modification allows for more flexibility as it can handle both cases where a list is provided and where no discount is specified, thus avoiding potential errors due to unexpected types."
+    },
+    {
+      "issue": "Mutable default argument in function 'calculate_discount'. Shared across all calls.",
+      "original": "def calculate_discount(price, discount=[], thresholds={}):",
+      "fixed": "Here's the corrected Python code for the 'calculate_discount' function:\n\n\ndef calculate_discount(price, discount=None, thresholds={}):\n    if discount is None:\n        discount = []\n    # rest of your code here...",
+      "explanation": "I changed \"discount=[], thresholds={}\" to \"discount=None, thresholds={}\" in the function definition. This modification allows for a more flexible input where if no discount value is provided, it defaults to an empty list instead of a pre-initialized list with potentially incorrect values."
+    },
+    {
+      "issue": "Mutable default argument in function 'batch_insert'. Shared across all calls.",
+      "original": "def batch_insert(conn, table, records=[]):",
+      "fixed": "Here's the corrected code:\n\n\ndef batch_insert(conn, table, records=None):\n    if records is None:\n        records = []\n    # rest of your function...",
+      "explanation": "I changed \"records=[]\" to \"records=None\" in the function definition. This modification allows for flexibility as the function can now accept an empty list or no argument at all, making it more versatile and easier to use in different scenarios."
+    },
+    {
+      "issue": "Mutable default argument in function 'run'. Shared across all calls.",
+      "original": "def run(self, data, config={}):",
+      "fixed": "Here's the corrected Python code for the given issue:\n\n\ndef run(self, data, config=None):\n    if config is None:\n        config = {}\n    # rest of your code here",
+      "explanation": "I changed the default value of `config` from an empty dictionary `{}` to `None`. This modification allows users to pass their own configuration when calling the function, and if no configuration is provided, it will use an empty dictionary as a default. The reason for this change is to provide more flexibility in function usage while maintaining a sensible default behavior."
+    }
+  ],
+  "tests_generated": 7
+}
