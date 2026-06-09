@@ -131,18 +131,6 @@ Each report contains:
 
 ---
 
-## Push to GitHub
-
-```bash
-git init
-git add .
-git commit -m "Autonomous Code Review Agent 6 agent pipeline Python AST SQL static analysis Ollama LLM fixes"
-git remote add origin https://github.com/rajapalagummi/Code-Review-Agent.git
-git branch -M main
-git push -u origin main
-```
-
----
 
 ## Without Ollama
 
